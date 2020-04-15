@@ -1,10 +1,8 @@
 #include <stdlib.h>
 #include "myLib.h"
 #include "game.h"
-// #include "spritesheetNet2.h"
-
-// #include "spritesheetNet.h"
 #include "spritesheet.h"
+#include "bgWinTemp.h"
 
 // player
 ANISPRITE player;
@@ -93,7 +91,7 @@ void updateGame() {
         updateHearts(&hearts[i]);
     }
 
-    hOff += 3;
+    hOff += 2;
 
     // if (!cheat) {
     //     hOff += 3;
@@ -131,12 +129,10 @@ void initPlayer() {
 // updates the player in each frame
 void updatePlayer() {
 
-    /*== gravity ==*/
-    // if player is above the ground
-    if (SHIFTDOWN(player.worldRow + player.rdel) < ground) {
+    // gravity
+    if (SHIFTDOWN(player.worldRow + player.rdel) < ground) { // if player is above the ground
         player.worldRow += player.rdel;
-    } else {
-        // if player is on the ground
+    } else { // if player is on the ground
         player.rdel = 0;
         jumping = 0;
     }
@@ -173,11 +169,10 @@ void updatePlayer() {
         player.worldCol += player.cdel;
     }
 
-    // causes bob to use the net
+    // makes bob use the net
     if (BUTTON_PRESSED(BUTTON_B) && !usingNet) {
         usingNet = 1;
         player.curFrame = 0;
-        // player.aniCounter = 0;
     }
 
     player.screenCol = player.worldCol;
@@ -193,7 +188,7 @@ void animatePlayer() {
             player.curFrame = (player.curFrame + 1) % player.numFrames;
         }
     } else {
-        if (player.aniCounter % 8 == 0) {
+        if (player.aniCounter % 6 == 0) {
             player.curFrame = (player.curFrame + 1) % player.numFrames;
         }
     }
@@ -216,15 +211,16 @@ void animatePlayer() {
 // draws the player in each frame
 void drawPlayer() {
     if (!usingNet) {
-        if (!cheat) {
+        if (!cheat) { // draw bob stationary while jumping
             shadowOAM[0].attr0 = player.screenRow | ATTR0_SQUARE | ATTR0_4BPP;
             shadowOAM[0].attr1 = player.screenCol | ATTR1_MEDIUM;
             shadowOAM[0].attr2 = ATTR2_TILEID(player.aniState * 4, player.curFrame * 4) | ATTR2_PALROW(0);
             
             player.width = 32;
-        } else {
-            // draw bob wearing a beekeeper suit
         }
+        // else {
+        //     // draw bob wearing a beekeeper suit
+        // }
     } else {
         shadowOAM[0].attr0 = player.screenRow | ATTR0_WIDE | ATTR0_4BPP;
         shadowOAM[0].attr1 = (player.screenCol - 16) | ATTR1_LARGE;
@@ -237,7 +233,7 @@ void drawPlayer() {
 // initializes THE BEES!!!!!!
 void initBees() {
     bees.screenRow = 95;
-    bees.screenCol = 10;
+    bees.screenCol = 25;
     bees.rdel = 0;
     bees.cdel = 0;
     bees.width = 32;
@@ -277,13 +273,13 @@ void drawBees() {
 // initializes the rocks
 void initRocks() {
     for (int i = 0; i < ROCKCOUNT; i++) {
-        rocks[i].screenRow = 124;
+        rocks[i].screenRow = 117;
         rocks[i].screenCol = 0;
-        rocks[i].worldCol = rand() % 240 + (SCREENWIDTH + hOff);
+        rocks[i].worldCol = rand() % 260 + (SCREENWIDTH + hOff);
         rocks[i].rdel = 0;
         rocks[i].cdel = 1;
-        rocks[i].width = 8;
-        rocks[i].height = 8;
+        rocks[i].width = 16;
+        rocks[i].height = 16;
         rocks[i].active = 1;
         rocks[i].hit = 0;
     }
@@ -307,7 +303,7 @@ void updateRocks(ANISPRITE* a) {
             player.screenCol, player.screenRow, player.width, player.height) 
             && a->hit == 0 // if the rock hasn't hit the player yet
             ) {
-                player.worldCol -= 25; // push the player back
+                player.worldCol -= 35; // push the player back
                 a->hit = 1; // the rock can't hit player again
                 livesRemaining--;
                 hearts[livesRemaining].active = 0;
@@ -336,7 +332,7 @@ void generateRock() {
     for (int i = 0; i < ROCKCOUNT; i++) {
         if (!rocks[i].active) { // finds the first inactive rock and sets it to active
             // rocks[i].worldCol = SCREENWIDTH + hOff;
-            rocks[i].worldCol = rand() % 240 + (SCREENWIDTH + hOff);
+            rocks[i].worldCol = rand() % 260 + (SCREENWIDTH + hOff);
             rocks[i].screenCol = rocks[i].worldCol;
             rocks[i].active = 1;
             rocks[i].hit = 0; // hasn't hit player yet
@@ -350,8 +346,8 @@ void drawRocks() {
     for (int i = 0; i < ROCKCOUNT; i++) {
         if (rocks[i].active) {
             shadowOAM[2 + i].attr0 = rocks[i].screenRow | ATTR0_SQUARE | ATTR0_4BPP;
-            shadowOAM[2 + i].attr1 = rocks[i].screenCol | ATTR1_TINY;
-            shadowOAM[2 + i].attr2 = ATTR2_TILEID(8, 0) | ATTR2_PALROW(0);
+            shadowOAM[2 + i].attr1 = rocks[i].screenCol | ATTR1_SMALL;
+            shadowOAM[2 + i].attr2 = ATTR2_TILEID(14, 2) | ATTR2_PALROW(0);
         }
     }
 }
@@ -359,9 +355,9 @@ void drawRocks() {
 // initializes the BUGS
 void initBugs() {
     for (int i = 0; i < BUGCOUNT; i++) {
-        bugs[i].screenRow = 118;
+        bugs[i].screenRow = 116;
         bugs[i].screenCol = 0;
-        bugs[i].worldCol = rand() % 240 + (SCREENWIDTH + hOff); // rand w/ boundaries: rand() % (max - 1 - min) + min
+        bugs[i].worldCol = rand() % 260 + (SCREENWIDTH + hOff); // rand w/ boundaries: rand() % (max - 1 - min) + min
         // bugs[i].worldCol = rand() % ((SCREENWIDTH + hOff) - 1 - SCREENWIDTH) + SCREENWIDTH;
         bugs[i].rdel = 0;
         bugs[i].cdel = 1;
@@ -385,20 +381,26 @@ void updateBugs(ANISPRITE* a) {
     /** this one doesn't have a cheat condition **/
     if (a->active) {
         // handles player-bug collision
-        if (collision(a->screenCol, a->screenRow, a->width, a->height,
+        if (collision(a->screenCol, a->screenRow, a->width, a->height, // get hit by the bug
             player.screenCol, player.screenRow, player.width, player.height) 
             && a->hit == 0 // if the bug hasn't hit bob yet
             && !usingNet // if bob's not using a net
-            ) { // if the cheat isn't activated
-                player.worldCol -= 25;
+            ) {
+                player.worldCol -= 30;
                 a->hit = 1; // can't hit the player again
                 livesRemaining--;
                 hearts[livesRemaining].active = 0;
-        } else if (collision(a->screenCol, a->screenRow, a->width, a->height,
+
+                // TESTING
+                // DMANow(3, bgWinTempTiles, &CHARBLOCK[0], bgWinTempTilesLen / 2);
+                // DMANow(3, bgWinTempMap, &SCREENBLOCK[28], bgWinTempMapLen / 2);
+
+        } else if (collision(a->screenCol, a->screenRow, a->width, a->height, // catch the bug
             player.screenCol, player.screenRow, player.width, player.height) 
             && a->hit == 0 // if the bug hasn't hit the player yet
             && usingNet) { // if bob is using a net
                 a->active = 0;
+                a->hit = 1;
                 bugsCaught++;
                 generateBug();
         }
@@ -426,17 +428,17 @@ void updateBugs(ANISPRITE* a) {
     //     }
     // }
 
-    a->screenCol = a->worldCol - hOff / 2;
+    a->screenCol = a->worldCol - hOff;
 }
 
 // generates a new bug
 void generateBug() {
     for (int i = 0; i < BUGCOUNT; i++) {
         if (!bugs[i].active) { // finds the first inactive bug and sets it to active
-            bugs[i].worldCol = rand() % 240 + (SCREENWIDTH + hOff);
+            bugs[i].worldCol = rand() % 260 + (SCREENWIDTH + hOff);
             bugs[i].screenCol = bugs[i].worldCol;
             bugs[i].active = 1;
-            bugs[i].hit = 0;
+            bugs[i].hit = 0; // reset
             break;
         }
     }

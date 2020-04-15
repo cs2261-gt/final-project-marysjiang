@@ -20,6 +20,7 @@ typedef struct {
 #define ROCKCOUNT 2
 #define BUGCOUNT 2
 #define HEARTCOUNT 3
+
 #define GRAVITY 100
 #define JUMPPOWER 1500
 #define SHIFTUP(num) ((num) << 8)

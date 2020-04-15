@@ -19,8 +19,8 @@
 * === Bugs (not the insect kind....): ===
 * - Bob will lose health even when there are no bugs or rocks being drawn 
 *   (they should be inactive and unable to collide ?)
-* - Bob will sometimes not lose health from hitting rocks ???
-* - the net gets stuck if updateRocks() and updateBugs() have an inactive cheat condition
+* - Collisions sometimes won't damage Bob
+* - the net gets stuck if updateRocks() and updateBugs() check for the cheat
 * - sometimes there will be weird flickering at the bottom-left of the 
 *   screen when a rock or bug goes off the screen, and it'll show another 
 *   part of the spritesheet
@@ -31,7 +31,7 @@
 * net and catch bugs. Press UP to jump over the rocks. Avoid the bees on the
 * left side of the screen.
 *
-* Activate the cheat by catching three bugs! (nothing happens ...)
+* Activate the cheat by catching three bugs (nothing happens right now).
 *
 */
 
