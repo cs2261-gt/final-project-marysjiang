@@ -2,7 +2,7 @@
 # 1 "<built-in>"
 # 1 "<command-line>"
 # 1 "main.c"
-# 38 "main.c"
+# 36 "main.c"
 # 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 1 3
 # 10 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 3
 # 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/machine/ieeefp.h" 1 3
@@ -811,7 +811,7 @@ extern long double _strtold_r (struct _reent *, const char *restrict, char **res
 extern long double strtold (const char *restrict, char **restrict);
 # 336 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 3
 
-# 39 "main.c" 2
+# 37 "main.c" 2
 # 1 "myLib.h" 1
 
 
@@ -901,7 +901,7 @@ typedef struct{
 
 
 int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, int widthB, int heightB);
-# 40 "main.c" 2
+# 38 "main.c" 2
 # 1 "game.h" 1
 
 typedef struct {
@@ -964,7 +964,7 @@ void drawBugs();
 void initHearts();
 void updateHearts(ANISPRITE *);
 void drawHearts();
-# 41 "main.c" 2
+# 39 "main.c" 2
 # 1 "bgStart.h" 1
 # 22 "bgStart.h"
 extern const unsigned short bgStartTiles[1040];
@@ -974,27 +974,17 @@ extern const unsigned short bgStartMap[1024];
 
 
 extern const unsigned short bgStartPal[256];
-# 42 "main.c" 2
-# 1 "bgGameTemp.h" 1
-# 22 "bgGameTemp.h"
-extern const unsigned short bgGameTempTiles[208];
+# 40 "main.c" 2
+# 1 "bgInstructions.h" 1
+# 22 "bgInstructions.h"
+extern const unsigned short bgInstructionsTiles[4032];
 
 
-extern const unsigned short bgGameTempMap[1024];
+extern const unsigned short bgInstructionsMap[1024];
 
 
-extern const unsigned short bgGameTempPal[256];
-# 43 "main.c" 2
-# 1 "bgInstructionsTemp.h" 1
-# 22 "bgInstructionsTemp.h"
-extern const unsigned short bgInstructionsTempTiles[432];
-
-
-extern const unsigned short bgInstructionsTempMap[1024];
-
-
-extern const unsigned short bgInstructionsTempPal[256];
-# 44 "main.c" 2
+extern const unsigned short bgInstructionsPal[256];
+# 41 "main.c" 2
 # 1 "bgLose.h" 1
 # 22 "bgLose.h"
 extern const unsigned short bgLoseTiles[1888];
@@ -1004,7 +994,7 @@ extern const unsigned short bgLoseMap[1024];
 
 
 extern const unsigned short bgLosePal[256];
-# 45 "main.c" 2
+# 42 "main.c" 2
 # 1 "bgPause.h" 1
 # 22 "bgPause.h"
 extern const unsigned short bgPauseTiles[2192];
@@ -1014,14 +1004,14 @@ extern const unsigned short bgPauseMap[1024];
 
 
 extern const unsigned short bgPausePal[256];
-# 46 "main.c" 2
+# 43 "main.c" 2
 # 1 "spritesheet.h" 1
 # 21 "spritesheet.h"
 extern const unsigned short spritesheetTiles[16384];
 
 
 extern const unsigned short spritesheetPal[256];
-# 47 "main.c" 2
+# 44 "main.c" 2
 # 1 "bgGameBack.h" 1
 # 22 "bgGameBack.h"
 extern const unsigned short bgGameBackTiles[2416];
@@ -1031,7 +1021,7 @@ extern const unsigned short bgGameBackMap[1024];
 
 
 extern const unsigned short bgGameBackPal[256];
-# 48 "main.c" 2
+# 45 "main.c" 2
 # 1 "bgGameFront.h" 1
 # 22 "bgGameFront.h"
 extern const unsigned short bgGameFrontTiles[7280];
@@ -1041,35 +1031,35 @@ extern const unsigned short bgGameFrontMap[2048];
 
 
 extern const unsigned short bgGameFrontPal[256];
-# 49 "main.c" 2
+# 46 "main.c" 2
 # 1 "bubblegumKK.h" 1
 
 
 
 
 extern const signed char bubblegumKK[1504224];
-# 50 "main.c" 2
+# 47 "main.c" 2
 # 1 "goKKRider.h" 1
 
 
 
 
 extern const signed char goKKRider[2220031];
-# 51 "main.c" 2
+# 48 "main.c" 2
 # 1 "bossaKK.h" 1
 
 
 
 
 extern const signed char bossaKK[860882];
-# 52 "main.c" 2
+# 49 "main.c" 2
 # 1 "rainy.h" 1
 
 
 
 
 extern const signed char rainy[1413216];
-# 53 "main.c" 2
+# 50 "main.c" 2
 
 
 void initialize();
@@ -1190,9 +1180,9 @@ void goToInstructions() {
     (*(unsigned short *)0x4000000) = (1<<9);
     (*(volatile unsigned short *)0x04000014) = 0;
 
-    DMANow(3, bgInstructionsTempPal, ((unsigned short *)0x5000000), 256);
-    DMANow(3, bgInstructionsTempTiles, &((charblock *)0x6000000)[0], 864 / 2);
-    DMANow(3, bgInstructionsTempMap, &((screenblock *)0x6000000)[28], 2048 / 2);
+    DMANow(3, bgInstructionsPal, ((unsigned short *)0x5000000), 256);
+    DMANow(3, bgInstructionsTiles, &((charblock *)0x6000000)[0], 8064 / 2);
+    DMANow(3, bgInstructionsMap, &((screenblock *)0x6000000)[28], 2048 / 2);
 
     waitForVBlank();
 

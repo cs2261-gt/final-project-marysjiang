@@ -1,4 +1,4 @@
-/*========= BOB STANS RISE UP!!!! =========*/
+/*========= BOB STANS RISE UP!!! =========*/
 /* === What's been finished!: ===
 * - at least two animated sprites
 * - simulatenous bgs
@@ -6,27 +6,25 @@
 * - lose state
 * - ability to catch bugs and jump over rocks
 * - health
+* - music / sfx
+* - sprites
 *
 * === What needs to be done: ===
+* - fix the gameplay bugs
 * - implement the cheat (it'll probably be if Bob catches three bugs, 
 *   he'll put on a beekeeper uniform and won't be damaged by bugs or rocks)
-*       - draw bob in a beekeeper uniform
-* - music
-* - making new state screens and updating the game bg
+*       - draw bob in beekeeper uniform
 * - maybe include a score system (if I have time)
-* - maybe change the number of bugs and rocks to make the game easier?
+* - fix the weird flickering at the bottom of the screen
 *
-* === Bugs (not the insect kind....): ===
-* - Bob will lose health even when there are no bugs or rocks being drawn 
-*   (they should be inactive and unable to collide ?)
+* === Bugs: ===
+* - Bob will lose health even when there are no bugs or rocks being drawn
 * - Collisions sometimes won't damage Bob
 * - the net gets stuck if updateRocks() and updateBugs() check for the cheat
-* - sometimes there will be weird flickering at the bottom-left of the 
-*   screen when a rock or bug goes off the screen, and it'll show another 
-*   part of the spritesheet
-* - sometimes rocks and bugs will appear halfway across the screen
+* - sometimes rocks and bugs will appear halfway across the screen (need to fix
+*   spawning)
 *
-* === How to play!!: ===
+* === How to play: ===
 * Use the LEFT and RIGHT buttons to move Bob. Press the B button to use the
 * net and catch bugs. Press UP to jump over the rocks. Avoid the bees on the
 * left side of the screen.
@@ -39,8 +37,7 @@
 #include "myLib.h"
 #include "game.h"
 #include "bgStart.h"
-#include "bgGameTemp.h"
-#include "bgInstructionsTemp.h"
+#include "bgInstructions.h"
 #include "bgLose.h"
 #include "bgPause.h"
 #include "spritesheet.h"
@@ -170,9 +167,9 @@ void goToInstructions() {
     REG_DISPCTL = BG1_ENABLE;
     REG_BG1HOFF = 0;
 
-    DMANow(3, bgInstructionsTempPal, PALETTE, 256);
-    DMANow(3, bgInstructionsTempTiles, &CHARBLOCK[0], bgInstructionsTempTilesLen / 2);
-    DMANow(3, bgInstructionsTempMap, &SCREENBLOCK[28], bgInstructionsTempMapLen / 2);
+    DMANow(3, bgInstructionsPal, PALETTE, 256);
+    DMANow(3, bgInstructionsTiles, &CHARBLOCK[0], bgInstructionsTilesLen / 2);
+    DMANow(3, bgInstructionsMap, &SCREENBLOCK[28], bgInstructionsMapLen / 2);
 
     waitForVBlank();
 

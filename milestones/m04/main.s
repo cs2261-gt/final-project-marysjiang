@@ -153,7 +153,7 @@ goToInstructions:
 	mov	r2, #83886080
 	mov	lr, pc
 	bx	r4
-	mov	r3, #432
+	mov	r3, #4032
 	mov	r2, #100663296
 	mov	r0, #3
 	ldr	r1, .L12+8
@@ -177,10 +177,10 @@ goToInstructions:
 	.align	2
 .L12:
 	.word	DMANow
-	.word	bgInstructionsTempPal
-	.word	bgInstructionsTempTiles
+	.word	bgInstructionsPal
+	.word	bgInstructionsTiles
 	.word	100720640
-	.word	bgInstructionsTempMap
+	.word	bgInstructionsMap
 	.word	waitForVBlank
 	.word	state
 	.size	goToInstructions, .-goToInstructions
