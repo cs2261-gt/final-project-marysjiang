@@ -986,8 +986,15 @@ extern const signed char bugBite[16239];
 
 
 
-extern const signed char rockHit[11808];
+extern const signed char rockHit[3917];
 # 7 "game.c" 2
+# 1 "powerUp.h" 1
+
+
+
+
+extern const signed char powerUp[9702];
+# 8 "game.c" 2
 
 
 ANISPRITE player;
@@ -1046,7 +1053,7 @@ void initGame() {
     rockTimer = 0;
     bugTimer = 0;
     rockTimerEnd = rand() % 100 + 10;
-    bugTimerEnd = rand() % 120 + 20;
+    bugTimerEnd = rand() % 100 + 20;
 
     vOff = 0;
     hOff = 0;
@@ -1114,7 +1121,7 @@ void updateGame() {
 
 
     if (cheat == 0) {
-        hOff += 2;
+        hOff += 3;
     } else if (cheat == 1) {
         hOff += 6;
     }
@@ -1181,11 +1188,11 @@ void updatePlayer() {
     }
 
 
-    if ((!(~(oldButtons)&((1<<4))) && (~buttons & ((1<<4)))) && ((player.screenCol - 1) < 240)) {
+    if ((!(~(oldButtons)&((1<<4))) && (~buttons & ((1<<4)))) && ((player.screenCol - 1) < 210)) {
         direction = RIGHT;
         player.worldCol += player.cdel;
     }
-    if ((~((*(volatile unsigned short *)0x04000130)) & ((1<<4))) && ((player.screenCol - 1) < 240)) {
+    if ((~((*(volatile unsigned short *)0x04000130)) & ((1<<4))) && ((player.screenCol - 1) < 210)) {
         direction = RIGHT;
         player.worldCol += player.cdel;
     }
@@ -1236,9 +1243,7 @@ void drawPlayer() {
             shadowOAM[0].attr0 = (0xFF & player.screenRow) | (0<<14) | (0<<13);
             shadowOAM[0].attr1 = (0x1FF & player.screenCol) | (2<<14);
             shadowOAM[0].attr2 = ((player.curFrame * 4)*32+(player.aniState * 4)) | ((0)<<12);
-
-            player.width = 32;
-        } else if (cheat == 1) {
+        } else {
             shadowOAM[0].attr0 = (0xFF & player.screenRow) | (0<<14) | (0<<13);
             shadowOAM[0].attr1 = (0x1FF & player.screenCol) | (2<<14);
             shadowOAM[0].attr2 = ((player.curFrame * 4)*32+((player.aniState * 4) + 16)) | ((0)<<12);
@@ -1295,15 +1300,13 @@ void drawBees() {
 void initRocks() {
     for (int i = 0; i < 2; i++) {
         rocks[i].screenRow = 117;
-
-
         rocks[i].worldCol = 240 + hOff;
-        rocks[i].screenCol = rocks[i].worldCol;
+        rocks[i].screenCol = 240;
         rocks[i].rdel = 0;
         rocks[i].cdel = 1;
         rocks[i].width = 16;
         rocks[i].height = 16;
-        rocks[i].active = 1;
+        rocks[i].active = 0;
         rocks[i].hit = 0;
     }
 }
@@ -1311,18 +1314,16 @@ void initRocks() {
 
 void updateRocks(ANISPRITE* a) {
 
-
     if (a->active) {
         if ((a->screenCol - 1) < -a->width) {
             a->active = 0;
-            a->worldCol = 240 + hOff;
         }
 
         if (collision(a->screenCol, a->screenRow, a->width, a->height,
             player.screenCol, player.screenRow, player.width, player.height)
             && a->hit == 0
             && cheat == 0) {
-                playSoundB(rockHit, 11808, 0);
+                playSoundB(rockHit, 3917, 0);
                 player.worldCol -= 35;
                 a->hit = 1;
                 livesRemaining--;
@@ -1331,12 +1332,12 @@ void updateRocks(ANISPRITE* a) {
 
         a->screenCol = a->worldCol - hOff / 2;
     }
+
     if (rockTimer == rockTimerEnd) {
         rockTimer = 0;
         generateRock();
+        rockTimerEnd = rand() % 100 + 10;
     }
-
-
 }
 
 
@@ -1359,6 +1360,8 @@ void drawRocks() {
             shadowOAM[2 + i].attr0 = (0xFF & rocks[i].screenRow) | (0<<14) | (0<<13);
             shadowOAM[2 + i].attr1 = (0x1FF & rocks[i].screenCol) | (1<<14);
             shadowOAM[2 + i].attr2 = ((2)*32+(14)) | ((0)<<12);
+        } else {
+            shadowOAM[2 + i].attr0 = (2<<8);
         }
     }
 }
@@ -1367,32 +1370,25 @@ void drawRocks() {
 void initBugs() {
     for (int i = 0; i < 2; i++) {
         bugs[i].screenRow = 116;
-        bugs[i].screenCol = 0;
-
-
         bugs[i].worldCol = 240 + hOff;
+        bugs[i].screenCol = bugs[i].worldCol;
         bugs[i].rdel = 0;
         bugs[i].cdel = 1;
         bugs[i].width = 16;
         bugs[i].height = 16;
-        bugs[i].active = 1;
+        bugs[i].active = 0;
         bugs[i].hit = 0;
     }
 }
 
 
 void updateBugs(ANISPRITE* a) {
-
     if (a->active) {
+
         if ((a->screenCol - 1) < -a->width) {
             a->active = 0;
-            a->worldCol = 240 + hOff;
-
         }
-    }
 
-
-    if (a->active) {
 
         if (collision(a->screenCol, a->screenRow, a->width, a->height,
             player.screenCol, player.screenRow, player.width, player.height)
@@ -1400,7 +1396,7 @@ void updateBugs(ANISPRITE* a) {
             && usingNet == 0
             && cheat == 0
             ) {
-                playSoundB(rockHit, 11808, 0);
+                playSoundB(rockHit, 3917, 0);
                 player.worldCol -= 30;
                 a->hit = 1;
                 livesRemaining--;
@@ -1413,7 +1409,6 @@ void updateBugs(ANISPRITE* a) {
                 a->active = 0;
                 a->hit = 1;
                 bugsCaught++;
-
         }
 
         a->screenCol = a->worldCol - hOff;
@@ -1422,6 +1417,7 @@ void updateBugs(ANISPRITE* a) {
     if (bugTimer == bugTimerEnd) {
         bugTimer = 0;
         generateBug();
+        bugTimerEnd = rand() % 100 + 20;
     }
 }
 
@@ -1429,7 +1425,6 @@ void updateBugs(ANISPRITE* a) {
 void generateBug() {
     for (int i = 0; i < 2; i++) {
         if (!bugs[i].active) {
-
             bugs[i].worldCol = 240 + hOff;
             bugs[i].screenCol = bugs[i].worldCol;
             bugs[i].active = 1;
@@ -1449,7 +1444,6 @@ void drawBugs() {
         } else {
             shadowOAM[2 + 3 + 1 + i].attr0 = (2<<8);
         }
-# 476 "game.c"
     }
 }
 
