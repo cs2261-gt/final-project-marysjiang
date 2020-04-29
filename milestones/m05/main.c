@@ -1,30 +1,5 @@
 /*========= BOB STANS RISE UP!!! =========*/
-/* === What's been finished!: ===
-* - at least two animated sprites
-* - simulatenous bgs
-* - game states
-* - lose state
-* - ability to catch bugs and jump over rocks
-* - health
-* - music / sfx
-* - sprites
-*
-* === What needs to be done: ===
-* - fix the gameplay bugs
-* - implement the cheat (it'll probably be if Bob catches three bugs, 
-*   he'll put on a beekeeper uniform and won't be damaged by bugs or rocks)
-*       - draw bob in beekeeper uniform
-* - maybe include a score system (if I have time)
-* - fix the weird flickering at the bottom of the screen
-*
-* === Bugs: ===
-* - Bob will lose health even when there are no bugs or rocks being drawn
-* - Collisions sometimes won't damage Bob
-* - the net gets stuck if updateRocks() and updateBugs() check for the cheat
-* - sometimes rocks and bugs will appear halfway across the screen (need to fix
-*   spawning)
-*
-* === How to play: ===
+/* === How to play: ===
 * Use the LEFT and RIGHT buttons to move Bob. Press the B button to use the
 * net and catch bugs. Press UP to jump over the rocks. Avoid the bees on the
 * left side of the screen.

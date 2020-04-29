@@ -435,7 +435,7 @@ instructions:
 	.word	oldButtons
 	.word	buttons
 	.word	stopSoundA
-	.word	2220031
+	.word	1770842
 	.word	playSoundA
 	.word	goKKRider
 	.word	initGame
