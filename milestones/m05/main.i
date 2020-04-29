@@ -968,53 +968,43 @@ void initHearts();
 void updateHearts(ANISPRITE *);
 void drawHearts();
 # 39 "main.c" 2
-# 1 "bgStart.h" 1
-# 22 "bgStart.h"
-extern const unsigned short bgStartTiles[1040];
-
-
-extern const unsigned short bgStartMap[1024];
-
-
-extern const unsigned short bgStartPal[256];
-# 40 "main.c" 2
 # 1 "bgInstructions.h" 1
 # 22 "bgInstructions.h"
-extern const unsigned short bgInstructionsTiles[4032];
+extern const unsigned short bgInstructionsTiles[6032];
 
 
 extern const unsigned short bgInstructionsMap[1024];
 
 
 extern const unsigned short bgInstructionsPal[256];
-# 41 "main.c" 2
+# 40 "main.c" 2
 # 1 "bgLose.h" 1
 # 22 "bgLose.h"
-extern const unsigned short bgLoseTiles[1888];
+extern const unsigned short bgLoseTiles[5776];
 
 
 extern const unsigned short bgLoseMap[1024];
 
 
 extern const unsigned short bgLosePal[256];
-# 42 "main.c" 2
+# 41 "main.c" 2
 # 1 "bgPause.h" 1
 # 22 "bgPause.h"
-extern const unsigned short bgPauseTiles[2192];
+extern const unsigned short bgPauseTiles[5088];
 
 
 extern const unsigned short bgPauseMap[1024];
 
 
 extern const unsigned short bgPausePal[256];
-# 43 "main.c" 2
+# 42 "main.c" 2
 # 1 "spritesheet.h" 1
 # 21 "spritesheet.h"
 extern const unsigned short spritesheetTiles[16384];
 
 
 extern const unsigned short spritesheetPal[256];
-# 44 "main.c" 2
+# 43 "main.c" 2
 # 1 "bgGameBack.h" 1
 # 22 "bgGameBack.h"
 extern const unsigned short bgGameBackTiles[2416];
@@ -1024,7 +1014,7 @@ extern const unsigned short bgGameBackMap[1024];
 
 
 extern const unsigned short bgGameBackPal[256];
-# 45 "main.c" 2
+# 44 "main.c" 2
 # 1 "bgGameFront.h" 1
 # 22 "bgGameFront.h"
 extern const unsigned short bgGameFrontTiles[7280];
@@ -1034,35 +1024,55 @@ extern const unsigned short bgGameFrontMap[2048];
 
 
 extern const unsigned short bgGameFrontPal[256];
-# 46 "main.c" 2
+# 45 "main.c" 2
 # 1 "bubblegumKK.h" 1
 
 
 
 
 extern const signed char bubblegumKK[1504224];
-# 47 "main.c" 2
+# 46 "main.c" 2
 # 1 "goKKRider.h" 1
 
 
 
 
 extern const signed char goKKRider[2220031];
-# 48 "main.c" 2
+# 47 "main.c" 2
 # 1 "bossaKK.h" 1
 
 
 
 
 extern const signed char bossaKK[860882];
-# 49 "main.c" 2
+# 48 "main.c" 2
 # 1 "rainy.h" 1
 
 
 
 
 extern const signed char rainy[1413216];
+# 49 "main.c" 2
+# 1 "bgStart1.h" 1
+# 22 "bgStart1.h"
+extern const unsigned short bgStart1Tiles[4304];
+
+
+extern const unsigned short bgStart1Map[1024];
+
+
+extern const unsigned short bgStart1Pal[256];
 # 50 "main.c" 2
+# 1 "bgStart2.h" 1
+# 22 "bgStart2.h"
+extern const unsigned short bgStart2Tiles[4160];
+
+
+extern const unsigned short bgStart2Map[1024];
+
+
+extern const unsigned short bgStart2Pal[256];
+# 51 "main.c" 2
 
 
 void initialize();
@@ -1083,6 +1093,9 @@ void lose();
 
 enum {START, INSTRUCTIONS, GAME, PAUSE, LOSE};
 int state;
+
+int bgState;
+int bgTimer;
 
 
 unsigned short buttons;
@@ -1139,6 +1152,9 @@ void initialize() {
     buttons = (*(volatile unsigned short *)0x04000130);
     oldButtons = 0;
 
+    bgTimer = 0;
+    bgState = 0;
+
     setupSounds();
     setupInterrupts();
 
@@ -1150,9 +1166,9 @@ void goToStart() {
     (*(unsigned short *)0x4000000) = (1<<9);
     (*(volatile unsigned short *)0x04000014) = 0;
 
-    DMANow(3, bgStartPal, ((unsigned short *)0x5000000), 256);
-    DMANow(3, bgStartTiles, &((charblock *)0x6000000)[0], 2080 / 2);
-    DMANow(3, bgStartMap, &((screenblock *)0x6000000)[28], 2048 / 2);
+    DMANow(3, bgStart1Pal, ((unsigned short *)0x5000000), 256);
+    DMANow(3, bgStart1Tiles, &((charblock *)0x6000000)[0], 8608 / 2);
+    DMANow(3, bgStart1Map, &((screenblock *)0x6000000)[28], 2048 / 2);
 
     hideSprites();
     DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 128 * 4);
@@ -1171,11 +1187,31 @@ void start() {
 
     waitForVBlank();
 
+    if (bgTimer == 50) {
+        if (bgState == 0) {
+            DMANow(3, bgStart1Pal, ((unsigned short *)0x5000000), 256);
+            DMANow(3, bgStart1Tiles, &((charblock *)0x6000000)[0], 8608 / 2);
+            DMANow(3, bgStart1Map, &((screenblock *)0x6000000)[28], 2048 / 2);
+
+            bgState = 1;
+        } else {
+            DMANow(3, bgStart2Pal, ((unsigned short *)0x5000000), 256);
+            DMANow(3, bgStart2Tiles, &((charblock *)0x6000000)[0], 8320 / 2);
+            DMANow(3, bgStart2Map, &((screenblock *)0x6000000)[28], 2048 / 2);
+
+            bgState = 0;
+        }
+
+        bgTimer = 0;
+    }
+
     if ((!(~(oldButtons)&((1<<3))) && (~buttons & ((1<<3))))) {
         srand(seed);
 
         goToInstructions();
     }
+
+    bgTimer++;
 }
 
 
@@ -1184,7 +1220,7 @@ void goToInstructions() {
     (*(volatile unsigned short *)0x04000014) = 0;
 
     DMANow(3, bgInstructionsPal, ((unsigned short *)0x5000000), 256);
-    DMANow(3, bgInstructionsTiles, &((charblock *)0x6000000)[0], 8064 / 2);
+    DMANow(3, bgInstructionsTiles, &((charblock *)0x6000000)[0], 12064 / 2);
     DMANow(3, bgInstructionsMap, &((screenblock *)0x6000000)[28], 2048 / 2);
 
     waitForVBlank();
@@ -1258,7 +1294,7 @@ void goToPause() {
     (*(volatile unsigned short *)0x04000014) = 0;
 
     DMANow(3, bgPausePal, ((unsigned short *)0x5000000), 256);
-    DMANow(3, bgPauseTiles, &((charblock *)0x6000000)[0], 4384 / 2);
+    DMANow(3, bgPauseTiles, &((charblock *)0x6000000)[0], 10176 / 2);
     DMANow(3, bgPauseMap, &((screenblock *)0x6000000)[28], 2048 / 2);
 
     hideSprites();
@@ -1292,7 +1328,7 @@ void goToLose() {
     (*(volatile unsigned short *)0x04000014) = 0;
 
     DMANow(3, bgLosePal, ((unsigned short *)0x5000000), 256);
-    DMANow(3, bgLoseTiles, &((charblock *)0x6000000)[0], 3776 / 2);
+    DMANow(3, bgLoseTiles, &((charblock *)0x6000000)[0], 11552 / 2);
     DMANow(3, bgLoseMap, &((screenblock *)0x6000000)[28], 2048 / 2);
 
     hideSprites();

@@ -36,7 +36,6 @@
 #include <stdlib.h>
 #include "myLib.h"
 #include "game.h"
-#include "bgStart.h"
 #include "bgInstructions.h"
 #include "bgLose.h"
 #include "bgPause.h"
@@ -47,6 +46,8 @@
 #include "goKKRider.h"
 #include "bossaKK.h"
 #include "rainy.h"
+#include "bgStart1.h"
+#include "bgStart2.h"
 
 // prototypes
 void initialize();
@@ -67,6 +68,9 @@ void lose();
 // game states
 enum {START, INSTRUCTIONS, GAME, PAUSE, LOSE};
 int state;
+
+int bgState;
+int bgTimer;
 
 // buttons
 unsigned short buttons;
@@ -122,6 +126,9 @@ void initialize() {
 
     buttons = BUTTONS;
     oldButtons = 0;
+
+    bgTimer = 0;
+    bgState = 0;
     
     setupSounds();
     setupInterrupts();
@@ -134,9 +141,9 @@ void goToStart() {
     REG_DISPCTL = BG1_ENABLE;
     REG_BG1HOFF = 0;
 
-    DMANow(3, bgStartPal, PALETTE, 256);
-    DMANow(3, bgStartTiles, &CHARBLOCK[0], bgStartTilesLen / 2);
-    DMANow(3, bgStartMap, &SCREENBLOCK[28], bgStartMapLen / 2);
+    DMANow(3, bgStart1Pal, PALETTE, 256);
+    DMANow(3, bgStart1Tiles, &CHARBLOCK[0], bgStart1TilesLen / 2);
+    DMANow(3, bgStart1Map, &SCREENBLOCK[28], bgStart1MapLen / 2);
 
     hideSprites();
     DMANow(3, shadowOAM, OAM, 128 * 4);
@@ -155,11 +162,31 @@ void start() {
 
     waitForVBlank();
 
+    if (bgTimer == 50) {
+        if (bgState == 0) {
+            DMANow(3, bgStart1Pal, PALETTE, 256);
+            DMANow(3, bgStart1Tiles, &CHARBLOCK[0], bgStart1TilesLen / 2);
+            DMANow(3, bgStart1Map, &SCREENBLOCK[28], bgStart1MapLen / 2);
+            
+            bgState = 1;
+        } else {
+            DMANow(3, bgStart2Pal, PALETTE, 256);
+            DMANow(3, bgStart2Tiles, &CHARBLOCK[0], bgStart2TilesLen / 2);
+            DMANow(3, bgStart2Map, &SCREENBLOCK[28], bgStart2MapLen / 2);
+
+            bgState = 0;
+        }
+
+        bgTimer = 0;
+    }
+
     if (BUTTON_PRESSED(BUTTON_START)) {
         srand(seed);
 
         goToInstructions();
     }
+
+    bgTimer++;
 }
 
 // set up instructions state
