@@ -924,15 +924,23 @@ typedef struct {
 extern ANISPRITE player;
 extern ANISPRITE bees;
 extern ANISPRITE rocks[2];
-extern ANISPRITE bugs[2];
+extern ANISPRITE bugs[3];
 extern ANISPRITE hearts[3];
+
+
 extern int livesRemaining;
-extern int hOff;
 extern int usingNet;
 extern int bugsCaught;
+
+
+extern int hOff;
+extern int vOff;
+
+
 extern int rockTimer;
-extern int bugTimer;
 extern int rockTimerEnd;
+extern int bugTimer;
+extern int bugTimerEnd;
 
 
 void initGame();
@@ -1264,8 +1272,8 @@ void goToGame() {
 void game() {
     updateGame();
 
-    (*(volatile unsigned short *)0x04000014) = hOff;
-    (*(volatile unsigned short *)0x04000010) = hOff / 2;
+    (*(volatile unsigned short *)0x04000014) = 2 * hOff;
+    (*(volatile unsigned short *)0x04000010) = hOff;
 
     drawGame();
 

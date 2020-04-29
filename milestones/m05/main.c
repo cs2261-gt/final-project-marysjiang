@@ -214,8 +214,8 @@ void goToGame() {
 void game() {
     updateGame();
 
-    REG_BG1HOFF = hOff;
-    REG_BG0HOFF = hOff / 2;
+    REG_BG1HOFF = 2 * hOff;
+    REG_BG0HOFF = hOff;
 
     drawGame();
     

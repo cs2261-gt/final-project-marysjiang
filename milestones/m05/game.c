@@ -4,7 +4,6 @@
 #include "spritesheet.h"
 #include "bugBite.h"
 #include "rockHit.h"
-#include "powerUp.h"
 
 // player
 ANISPRITE player;
@@ -38,7 +37,7 @@ ANISPRITE hearts[HEARTCOUNT];
 // shadow OAM
 OBJ_ATTR shadowOAM[128];
 
-// vOff and hOff
+// offsets
 int vOff;
 int hOff;
 
@@ -46,28 +45,37 @@ int hOff;
 enum { RIGHT = 0, LEFT = 1 };
 int direction;
 
-// initializde the game
+// initialize the game
 void initGame() {
     DMANow(3, spritesheetTiles, &CHARBLOCK[4], spritesheetTilesLen / 2);
     DMANow(3, spritesheetPal, SPRITEPALETTE, 256);
 
+    // initialize bob's direction
     direction = RIGHT;
+
+    // initialize bob variables
     livesRemaining = 3;
+    bugsCaught = 0;
     usingNet = 0;
     netTimer = 0;
-    bugsCaught = 0;
     
+    // initialize cheat
     cheat = 0;
     cheatTimer = 0;
 
+    // initialize rock generating timer
     rockTimer = 0;
-    bugTimer = 0;
-    rockTimerEnd = rand() % 100 + 10;
-    bugTimerEnd = rand() % 100 + 20;
+    rockTimerEnd = rand() % 90 + 10;
 
+    // initialize bug generating timer
+    bugTimer = 0;
+    bugTimerEnd = rand() % 270 + 20;
+
+    // initialize offsets
     vOff = 0;
     hOff = 0;
 
+    // initialize gravity variables
     ground = 100;
     jumping = 1;
 
@@ -85,12 +93,12 @@ void updateGame() {
     // increment the bug timer
     bugTimer++;
 
-    // increment the net timer
+    // increment the net timer while net is being used
     if (usingNet) {
         netTimer++;
     }
 
-    // increment cheat timer
+    // increment cheat timer during cheat
     if (cheat == 1) {
         cheatTimer++;
     }
@@ -131,8 +139,8 @@ void updateGame() {
 
     // increment hOff
     if (cheat == 0) {
-        hOff += 3;
-    } else if (cheat == 1) {
+        hOff += 2;
+    } else {
         hOff += 6;
     }
 }
@@ -213,6 +221,7 @@ void updatePlayer() {
         player.curFrame = 0;
     }
 
+    // update location
     player.screenCol = player.worldCol;
     player.screenRow = SHIFTDOWN(player.worldRow) - vOff;
 
@@ -242,14 +251,10 @@ void animatePlayer() {
     player.aniCounter++;
 }
 
-/**
-* aniState: col in spritesheet
-* curFrame: row in spritesheet
-*/
 // draws the player in each frame
 void drawPlayer() {
     if (usingNet == 0) {
-        if (cheat == 0) {
+        if (cheat == 0) { // draw normal bob
             shadowOAM[0].attr0 = (ROWMASK & player.screenRow) | ATTR0_SQUARE | ATTR0_4BPP;
             shadowOAM[0].attr1 = (COLMASK & player.screenCol) | ATTR1_MEDIUM;
             shadowOAM[0].attr2 = ATTR2_TILEID(player.aniState * 4, player.curFrame * 4) | ATTR2_PALROW(0);
@@ -269,8 +274,6 @@ void drawPlayer() {
 void initBees() {
     bees.screenRow = 95;
     bees.screenCol = 25;
-    bees.rdel = 0;
-    bees.cdel = 0;
     bees.width = 32;
     bees.height = 32;
     bees.aniCounter = 0;
@@ -309,11 +312,9 @@ void drawBees() {
 // initializes the rocks
 void initRocks() {
     for (int i = 0; i < ROCKCOUNT; i++) {
+        rocks[i].screenCol = 0;
         rocks[i].screenRow = 117;
-        rocks[i].worldCol = SCREENWIDTH + hOff;
-        rocks[i].screenCol = SCREENWIDTH;
-        rocks[i].rdel = 0;
-        rocks[i].cdel = 1;
+        rocks[i].worldCol = 0;
         rocks[i].width = 16;
         rocks[i].height = 16;
         rocks[i].active = 0;
@@ -323,12 +324,13 @@ void initRocks() {
 
 // updates the rocks
 void updateRocks(ANISPRITE* a) {
-    // moves the rock while it's active
     if (a->active) {
+        // set rock to inactive when it goes off the screen
         if ((a->screenCol - 1) < -a->width) {
             a->active = 0;
         }
 
+        // handle rock-player collisions
         if (collision(a->screenCol, a->screenRow, a->width, a->height,
             player.screenCol, player.screenRow, player.width, player.height) 
             && a->hit == 0 // if the rock hasn't hit the player yet
@@ -340,13 +342,15 @@ void updateRocks(ANISPRITE* a) {
                 hearts[livesRemaining].active = 0;
         }
 
-        a->screenCol = a->worldCol - hOff / 2;
+        // update screenCol
+        a->screenCol = a->worldCol - hOff;
     }
 
+    // timer to generate new rock
     if (rockTimer == rockTimerEnd) {
-        rockTimer = 0;
+        rockTimer = 0; // reset timer
+        rockTimerEnd = rand() % 90 + 10; // reset timer end
         generateRock();
-        rockTimerEnd = rand() % 100 + 10;
     }
 }
 
@@ -357,7 +361,7 @@ void generateRock() {
             rocks[i].worldCol = SCREENWIDTH + hOff;
             rocks[i].screenCol = rocks[i].worldCol;
             rocks[i].active = 1;
-            rocks[i].hit = 0; // hasn't hit player yet
+            rocks[i].hit = 0; // reset ability to hit player
             break;
         }
     }
@@ -379,11 +383,9 @@ void drawRocks() {
 // initializes the BUGS
 void initBugs() {
     for (int i = 0; i < BUGCOUNT; i++) {
+        bugs[i].screenCol = 0;
         bugs[i].screenRow = 116;
-        bugs[i].worldCol = SCREENWIDTH + hOff;
-        bugs[i].screenCol = bugs[i].worldCol;
-        bugs[i].rdel = 0;
-        bugs[i].cdel = 1;
+        bugs[i].worldCol = 0;
         bugs[i].width = 16;
         bugs[i].height = 16;
         bugs[i].active = 0;
@@ -394,7 +396,7 @@ void initBugs() {
 // updates the bugs in each frame
 void updateBugs(ANISPRITE* a) {
     if (a->active) {
-        // set bug to inactive if it goes off the screen and generate a new bug
+        // set bug to inactive if it goes off the screen
         if ((a->screenCol - 1) < -a->width) {
             a->active = 0;
         }
@@ -407,9 +409,9 @@ void updateBugs(ANISPRITE* a) {
             && cheat == 0 // if bob's not using a net
             ) {
                 playSoundB(rockHit, ROCKHITLEN, 0);
-                player.worldCol -= 30;
+                player.worldCol -= 30; // push bob back
                 a->hit = 1; // can't hit the player again
-                livesRemaining--;
+                livesRemaining--; // lose health
                 hearts[livesRemaining].active = 0;
         } else if (collision(a->screenCol, a->screenRow, a->width, a->height, // catch the bug
             player.screenCol, player.screenRow, player.width, player.height) 
@@ -421,13 +423,15 @@ void updateBugs(ANISPRITE* a) {
                 bugsCaught++;
         }
 
+        // update screenCol
         a->screenCol = a->worldCol - hOff;
     }
 
+    // generate bug using bug timer
     if (bugTimer == bugTimerEnd) {
-        bugTimer = 0;
+        bugTimer = 0; // reset timer
+        bugTimerEnd = rand() % 270 + 20; // reset timer end
         generateBug();
-        bugTimerEnd = rand() % 100 + 20;
     }
 }
 
@@ -438,7 +442,7 @@ void generateBug() {
             bugs[i].worldCol = SCREENWIDTH + hOff;
             bugs[i].screenCol = bugs[i].worldCol;
             bugs[i].active = 1;
-            bugs[i].hit = 0; // reset
+            bugs[i].hit = 0; // reset ability to hit player
             break;
         }
     }
@@ -448,11 +452,11 @@ void generateBug() {
 void drawBugs() {
     for (int i = 0; i < BUGCOUNT; i++) {
         if (bugs[i].active) {
-            shadowOAM[ROCKCOUNT + HEARTCOUNT + 1 + i].attr0 = (ROWMASK & bugs[i].screenRow) | ATTR0_SQUARE | ATTR0_4BPP;
-            shadowOAM[ROCKCOUNT + HEARTCOUNT + 1 + i].attr1 = (COLMASK & bugs[i].screenCol) | ATTR1_SMALL;
-            shadowOAM[ROCKCOUNT + HEARTCOUNT + 1 + i].attr2 = ATTR2_TILEID(14, 0) | ATTR2_PALROW(0);
+            shadowOAM[ROCKCOUNT + HEARTCOUNT + 2 + i].attr0 = (ROWMASK & bugs[i].screenRow) | ATTR0_SQUARE | ATTR0_4BPP;
+            shadowOAM[ROCKCOUNT + HEARTCOUNT + 2 + i].attr1 = (COLMASK & bugs[i].screenCol) | ATTR1_SMALL;
+            shadowOAM[ROCKCOUNT + HEARTCOUNT + 2 + i].attr2 = ATTR2_TILEID(14, 0) | ATTR2_PALROW(0);
         } else {
-            shadowOAM[ROCKCOUNT + HEARTCOUNT + 1 + i].attr0 = ATTR0_HIDE;
+            shadowOAM[ROCKCOUNT + HEARTCOUNT + 2 + i].attr0 = ATTR0_HIDE;
         }
     }
 }

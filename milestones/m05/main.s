@@ -652,20 +652,16 @@ game:
 	ldr	r3, .L72
 	mov	lr, pc
 	bx	r3
-	mov	r1, #67108864
+	mov	r2, #67108864
 	ldr	r3, .L72+4
-	ldr	r2, [r3]
-	add	r3, r2, r2, lsr #31
-	asr	r3, r3, #1
-	lsl	r3, r3, #16
-	lsl	r2, r2, #16
+	ldrh	r1, [r3]
+	lsl	r3, r1, #17
 	lsr	r3, r3, #16
-	lsr	r2, r2, #16
-	strh	r2, [r1, #20]	@ movhi
-	strh	r3, [r1, #16]	@ movhi
-	ldr	r2, .L72+8
+	strh	r3, [r2, #20]	@ movhi
+	strh	r1, [r2, #16]	@ movhi
+	ldr	r3, .L72+8
 	mov	lr, pc
-	bx	r2
+	bx	r3
 	ldr	r3, .L72+12
 	mov	lr, pc
 	bx	r3

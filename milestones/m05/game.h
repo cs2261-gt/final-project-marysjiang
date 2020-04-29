@@ -18,7 +18,7 @@ typedef struct {
 
 // constants
 #define ROCKCOUNT 2
-#define BUGCOUNT 2
+#define BUGCOUNT 3
 #define HEARTCOUNT 3
 
 #define GRAVITY 100
@@ -32,13 +32,21 @@ extern ANISPRITE bees;
 extern ANISPRITE rocks[ROCKCOUNT];
 extern ANISPRITE bugs[BUGCOUNT];
 extern ANISPRITE hearts[HEARTCOUNT];
+ 
+ // player variables
 extern int livesRemaining;
-extern int hOff;
 extern int usingNet;
 extern int bugsCaught;
+
+// offset variable
+extern int hOff;
+extern int vOff;
+
+// obstacle timers
 extern int rockTimer;
-extern int bugTimer;
 extern int rockTimerEnd;
+extern int bugTimer;
+extern int bugTimerEnd;
 
 // game prototypes
 void initGame();
