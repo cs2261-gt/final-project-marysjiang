@@ -612,13 +612,17 @@ updateBees:
 	mov	lr, pc
 	bx	r5
 	cmp	r0, #0
-	bne	.L82
+	beq	.L76
+	ldr	r3, .L83+12
+	ldr	r5, [r3]
+	cmp	r5, #0
+	beq	.L82
 .L76:
 	ldr	r5, [r4, #32]
 	tst	r5, #7
 	bne	.L77
 	ldr	r0, [r4, #40]
-	ldr	r3, .L83+12
+	ldr	r3, .L83+16
 	ldr	r1, [r4, #44]
 	add	r0, r0, #1
 	mov	lr, pc
@@ -632,15 +636,14 @@ updateBees:
 	pop	{r4, r5, lr}
 	bx	lr
 .L82:
-	mov	r2, #0
-	ldr	r3, .L83+16
-	ldr	r1, .L83+20
-	ldr	r0, .L83+24
+	ldr	r3, .L83+20
+	mov	r2, r5
+	ldr	r1, .L83+24
+	ldr	r0, .L83+28
 	mov	lr, pc
 	bx	r3
-	mov	r2, #0
-	ldr	r3, .L83+28
-	str	r2, [r3]
+	ldr	r3, .L83+32
+	str	r5, [r3]
 	b	.L76
 .L84:
 	.align	2
@@ -648,6 +651,7 @@ updateBees:
 	.word	player
 	.word	bees
 	.word	collision
+	.word	cheat
 	.word	__aeabi_idivmod
 	.word	playSoundB
 	.word	16239

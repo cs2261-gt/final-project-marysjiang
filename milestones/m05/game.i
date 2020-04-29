@@ -1272,7 +1272,7 @@ void initBees() {
 void updateBees() {
 
     if (collision(bees.screenCol, bees.screenRow, bees.width, bees.height,
-        player.screenCol, player.screenRow, player.width, player.height)) {
+        player.screenCol, player.screenRow, player.width, player.height) && cheat == 0) {
             playSoundB(bugBite, 16239, 0);
             livesRemaining = 0;
     }

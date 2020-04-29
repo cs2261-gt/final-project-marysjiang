@@ -282,7 +282,7 @@ void initBees() {
 void updateBees() {
     // handles bee-player collision
     if (collision(bees.screenCol, bees.screenRow, bees.width, bees.height,
-        player.screenCol, player.screenRow, player.width, player.height)) {
+        player.screenCol, player.screenRow, player.width, player.height) && cheat == 0) {
             playSoundB(bugBite, BUGBITELEN, 0);
             livesRemaining = 0; // lose the game
     }
