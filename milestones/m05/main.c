@@ -1,10 +1,10 @@
-/*========= BOB STANS RISE UP!!! =========*/
+/*========= BOB STANS RISE UP!!!!! =========*/
 /* === How to play: ===
 * Use the LEFT and RIGHT buttons to move Bob. Press the B button to use the
 * net and catch bugs. Press UP to jump over the rocks. Avoid the bees on the
 * left side of the screen.
 *
-* Activate the cheat by catching three bugs (nothing happens right now).
+* Activate the cheat by catching three bugs.
 *
 */
 
