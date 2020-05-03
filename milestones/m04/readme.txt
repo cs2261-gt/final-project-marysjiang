@@ -1,0 +1,2 @@
+- need to change number of bugs to 1 + number of rocks to 2
+- mysterious force hitting player that isn’t visible on the screen?
